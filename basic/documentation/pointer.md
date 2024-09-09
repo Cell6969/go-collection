@@ -86,3 +86,54 @@ jika dilihat, maka address1 tidak akan sama dengan address2. Karena address2 mem
 	fmt.Println(adress2)
 ```
 Dengan demikian siapapun yang memiliki pointer dari address2 akan berubah.
+
+## Pointer function
+Ketika melempar parameter pada function, parameter tersebut akan mengcopy value nilai yang dilempar. Untuk mendapatkan reference parameter tersebut maka bisa dilakukan seperti ini
+```go
+package main
+
+import "fmt"
+
+type Address struct {
+	City     string
+	Country  string
+	Province string
+}
+
+func ChanceCountryToIndonesia(address *Address) {
+	address.Country = "Indonesia"
+}
+
+func main() {
+	var address *Address = &Address{}
+	ChanceCountryToIndonesia(address)
+	fmt.Println(address)
+
+	// jika variable awal yang dibuat bukan pointer
+	var address2 Address = Address{}
+	ChanceCountryToIndonesia(&address2)
+	fmt.Println(address2)
+}
+```
+
+## Pointer di method
+Contoh implementasi:
+```go
+package main
+
+import "fmt"
+
+type Man struct {
+	Name string
+}
+
+func (man *Man) Married() {
+	man.Name = "Mr. " + man.Name
+}
+
+func main() {
+	jonathan := Man{"jonathan"}
+	jonathan.Married()
+	fmt.Println(jonathan.Name)
+}
+```
