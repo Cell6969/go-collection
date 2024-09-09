@@ -7,6 +7,36 @@ import (
 	"testing"
 )
 
+func BenchmarkTable(b *testing.B) {
+	benchmarks := []struct {
+		name    string
+		request string
+	}{
+		{
+			name:    "jonathan",
+			request: "jonathan",
+		},
+		{
+			name:    "aldo",
+			request: "aldo",
+		},
+	}
+
+	for _, bm := range benchmarks {
+		b.Run(bm.name, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				HelloWord(bm.request)
+			}
+		})
+	}
+}
+
+func BenchmarkHelloWord(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		HelloWord("jonathan")
+	}
+}
+
 func TestTableHelloWorld(t *testing.T) {
 	test := []struct {
 		name     string
