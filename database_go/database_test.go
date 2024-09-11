@@ -17,5 +17,6 @@ func TestOpenConnection(t *testing.T) {
 	}
 	defer db.Close()
 
-	// TODO
+	// NOTE
+
 }
