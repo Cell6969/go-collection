@@ -212,3 +212,53 @@ func TestJSONTagDecode(t *testing.T) {
 	fmt.Println(product)
 }
 ```
+
+## Map
+Penggunaan struct untuk json terkadang cukup menyulitkan ketika data json nya dynamic. Jikalau data json nya dynamic maka bisa menggunakan map. 
+
+Sebagai contoh:
+```go
+func TestMapDecode(t *testing.T) {
+	var jsonString string = `{"id":"P0001","name":"Handphone","image_url":"http://image.com"}`
+	var jsonBytes []byte = []byte(jsonString)
+
+	var result map[string]interface{}
+
+	json.Unmarshal(jsonBytes, &result)
+	fmt.Println(result)
+	fmt.Println(result["id"])
+	fmt.Println(result["name"])
+	fmt.Println(result["image_url"])
+}
+```
+
+## Streaming Decoder
+Jikalau biasanya data json yang diterima akan disimpan dalam variable, namun hal ini tak perlu dilakukan karena pada package json sudah tersedia fitur stream decoder.
+
+Contoh, buat file json:
+```json
+{
+  "FirstName": "Aldo",
+  "LastName": "kevin"
+}
+```
+
+Kemudian pada code golang:
+```go
+func TestDecoderStream(t *testing.T) {
+	reader, _ := os.Open("Customer.json")
+	var decoder *json.Decoder = json.NewDecoder(reader)
+
+	var customer *Customer = &Customer{}
+	decoder.Decode(customer)
+	fmt.Println(customer)
+}
+```
+
+## Streaming Encoder
+Kebalikannya , bisa juga stream encode tanpa harus pindah ke variable. 
+
+Contoh implementasi:
+```go
+
+```

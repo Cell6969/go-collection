@@ -1,0 +1,13 @@
+{
+  "FirstName": "aldo",
+  "LastName": "jek",
+  "Age": 0,
+  "Hobbies": null,
+  "Addressess": [
+    {
+      "Street": "bekasi",
+      "Country": "indonesia",
+      "PostalCode": "1111"
+    }
+  ]
+}
