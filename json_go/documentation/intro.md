@@ -80,3 +80,135 @@ func TestDecodedJSON(t *testing.T) {
 	fmt.Println(customer.Age)
 }
 ```
+
+## JSON Array
+Terkadang tipe data di json merupakan array baik array primitive atau array json. 
+
+Contoh implementasi untuk json array primitive
+```go
+type Customer struct {
+    FirstName string
+    LastName  string
+    Age       int
+    Hobbies   []string
+}
+
+func TestJSONArray(t *testing.T) {
+    var customer *Customer = &Customer{
+        FirstName: "Aldo",
+        LastName:  "Jonathan",
+        Hobbies:   []string{"Gaming", "Coding"},
+}
+
+bytes, _ := json.Marshal(customer)
+fmt.Println(string(bytes))
+}
+
+func TestJSONArrayDecode(t *testing.T) {
+    var jsonString string = `{"FirstName":"Aldo","LastName":"Jonathan","Age":0,"Hobbies":["Gaming","Coding"]}`
+    var jsonBytes []byte = []byte(jsonString)
+
+    var customer *Customer = &Customer{}
+    var err error = json.Unmarshal(jsonBytes, customer)
+
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Println(customer)
+}
+```
+
+Kemudian untuk case dimana datanya lebih kompleks:
+```go
+func TestJSONArrayComplexEncode(t *testing.T) {
+	var customer *Customer = &Customer{
+		FirstName: "Aldo",
+		LastName:  "Jonathan",
+		Addressess: []Address{
+			{
+				Street:     "bekasi",
+				Country:    "indonesia",
+				PostalCode: "123",
+			},
+			{
+				Street:     "bekasi1",
+				Country:    "indonesia1",
+				PostalCode: "1231",
+			},
+		},
+	}
+
+	bytes, _ := json.Marshal(customer)
+	fmt.Println(string(bytes))
+}
+
+func TestJSONArrayComplexDecode(t *testing.T) {
+	var jsonString string = `{"FirstName":"Aldo","LastName":"Jonathan","Age":0,"Hobbies":null,"Addressess":[{"Street":"bekasi","Country":"indonesia","PostalCode":"123"},{"Street":"bekasi1","Country":"indonesia1","PostalCode":"1231"}]}`
+	var jsonBytes []byte = []byte(jsonString)
+
+	var customer *Customer = &Customer{}
+	var err error = json.Unmarshal(jsonBytes, customer)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(customer)
+	fmt.Println(customer.FirstName)
+	fmt.Println(customer.LastName)
+	fmt.Println(customer.Addressess[0].Street)
+	fmt.Println(customer.Addressess[0].Country)
+	fmt.Println(customer.Addressess[0].PostalCode)
+}
+```
+
+Bisa juga langsung mendecode array json secara langsung:
+```go
+func TestDecodeOnlyJSONArray(t *testing.T) {
+	var jsonString string = `[{"Street": "Bekasi", "Country" : "Indonesia", "PostalCode": "123"},{"Street": "Bekasi", "Country" : "Indonesia", "PostalCode": "123"}]`
+	var jsonBytes []byte = []byte(jsonString)
+
+	var addresses *[]Address = &[]Address{}
+
+	var err error = json.Unmarshal(jsonBytes, addresses)
+
+	if err != nil {
+	}
+
+	fmt.Println(addresses)
+}
+```
+
+## JSON Tag
+By default ketika mengkonversi data struct ke json, key nya akan sama dikarenakan case sensitive. Namun ada beberapa kondisi dimana data json yang diterima menggunakan huruf kecil semua. Untuk itu di package json terdapat tag untuk aliasing.
+
+Contoh:
+```go
+type Product struct {
+	Id       string `json:"id"`
+	Name     string `json:"name"`
+	ImageURl string `json:"image_url"`
+}
+
+func TestJSONTag(t *testing.T) {
+	var product *Product = &Product{
+		Id:       "P0001",
+		Name:     "Handphone",
+		ImageURl: "http://image.com",
+	}
+
+	bytes, _ := json.Marshal(product)
+	fmt.Println(string(bytes))
+}
+
+func TestJSONTagDecode(t *testing.T) {
+	var jsonString string = `{"id":"P0001","name":"Handphone","image_url":"http://image.com"}`
+	var jsonBytes []byte = []byte(jsonString)
+
+	var product *Product = &Product{}
+
+	json.Unmarshal(jsonBytes, product)
+
+	fmt.Println(product)
+}
+```
