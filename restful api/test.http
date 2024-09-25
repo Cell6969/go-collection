@@ -7,11 +7,11 @@ POST http://localhost:3000/api/categories
 Content-Type: application/json
 
 {
-  "name": "Food"
+  "name": ""
 }
 
 ### Find Category By Id
-GET http://localhost:3000/api/categories/1
+GET http://localhost:3000/api/categories/100
 Accept: application/json
 
 ### Update Category By Id
