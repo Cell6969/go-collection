@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"restful_api/app"
 	"restful_api/controller"
+	"restful_api/exception"
 	"restful_api/helper"
 	"restful_api/repository"
 	"restful_api/service"
@@ -28,6 +29,8 @@ func main() {
 	router.POST("/api/categories", categoryController.Create)
 	router.PUT("/api/categories/:id", categoryController.Update)
 	router.DELETE("/api/categories/:id", categoryController.Delete)
+
+	router.PanicHandler = exception.ErrorHandler
 
 	var server http.Server = http.Server{
 		Addr:    ":3000",
