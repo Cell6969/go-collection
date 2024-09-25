@@ -10,6 +10,7 @@ import (
 	"restful_api/controller"
 	"restful_api/exception"
 	"restful_api/helper"
+	"restful_api/middleware"
 	"restful_api/repository"
 	"restful_api/service"
 )
@@ -34,7 +35,7 @@ func main() {
 
 	var server http.Server = http.Server{
 		Addr:    ":3000",
-		Handler: router,
+		Handler: middleware.NewAuthMiddleware(router),
 	}
 
 	var err error = server.ListenAndServe()
