@@ -7,8 +7,10 @@ type SimpleRepository struct {
 	Error bool
 }
 
-func NewSimpleRepository() *SimpleRepository {
-	return &SimpleRepository{}
+func NewSimpleRepository(isError bool) *SimpleRepository {
+	return &SimpleRepository{
+		Error: isError,
+	}
 }
 
 // create service provider
