@@ -364,3 +364,54 @@ func InitializedFooBarService() *FooBarService {
 }
 ```
 Jalankan wire, maka secara otomatis akan tergenerate.
+
+## Binding Interface
+Pada pembuatan aplikasi , biasanya akan sering digunakan interface sebagai kontrak struct. By default, google wire akan menggunakan tipe data asli untuk melakukan dependency injection. Jikalau parameter yang dilempar merupakan interface dan tidak ada provider yang mengembalikan interface tersebut maka akan terjadi error. Oleh karena itu kita bisa memberi tahu sebuah interface akan menggunakan provider dengan tipe apa.
+
+Contoh implementasi:
+```go
+package simple
+
+// create sayhello interface and implementation
+type SayHello interface {
+	Hello(name string) string
+}
+
+type SayHelloImpl struct {
+}
+
+func (s *SayHelloImpl) Hello(name string) string {
+	return "Hello " + name
+}
+
+// create HelloService from interface
+type HelloService struct {
+	SayHello SayHello
+}
+
+// create constructor SayHelloImpl and Hello Service
+func NewSayHelloImpl() *SayHelloImpl {
+	return &SayHelloImpl{}
+}
+
+func NewHelloService(sayHello SayHello) *HelloService {
+	return &HelloService{SayHello: sayHello}
+}
+```
+Pada code diatas, ketika digenerate akan terjadi error. Hal ini disebabkan karena google wire mendapati bahwa HelloService membutuhkan parameter SayHello bukan SayHelloImpl. Tetapi SayHello sendiri merupakan interface sehingga bukan provider. Oleh karena itu perlu diberitahu adanya interface pada google wire dengan cara binding.
+
+implementasi:
+```go
+var helloSet = wire.NewSet(
+	NewSayHelloImpl,
+	wire.Bind(new(SayHello), new(*SayHelloImpl)),
+)
+
+func InitializedHelloService() *HelloService {
+	wire.Build(helloSet, NewHelloService)
+	return nil
+}
+```
+
+Jadi pada code diatas kita buat set terlebih dahulu dengan isi NewSayHelloImpl dan bind SayHello dan *SayHelloImpl
+Hal ini bertujuan untuk memberi tahu ketika dibutuhkan SayHello maka pointer data nya adalah SayHelloImpl. Sehingga ketika digabungkan antara HelloService dengan SayHello, maka HelloService tersebut akan memanggil si *SayHelloImpl.
