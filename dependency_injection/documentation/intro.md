@@ -294,3 +294,73 @@ func InitializedDatabaseRepository() *DatabaseRepository {
 	return databaseRepository
 }
 ```
+
+## Provider Set
+Provider set berfungsi untuk mengroupkan semua provider sehingga akan lebih mudah untuk dibaca.
+
+Sebagai contoh , akan dibuat provider foo dan bar.
+
+foo.go
+```go
+package simple
+
+type FooRepository struct {
+}
+
+func NewFooRepository() *FooRepository {
+	return &FooRepository{}
+}
+
+type FooService struct {
+	*FooRepository
+}
+
+func NewFooService(fooRepository *FooRepository) *FooService {
+	return &FooService{FooRepository: fooRepository}
+}
+```
+
+bar.go
+```go
+package simple
+
+type BarReposiotry struct {
+}
+
+func NewBarReposiotry() *BarReposiotry {
+	return &BarReposiotry{}
+}
+
+type BarService struct {
+	*BarReposiotry
+}
+
+func NewBarService(barReposiotry *BarReposiotry) *BarService {
+	return &BarService{BarReposiotry: barReposiotry}
+}
+```
+
+kemudian buat constructor untuk foobar service
+```go
+type FooBarService struct {
+	*FooService
+	*BarService
+}
+
+func NewFooBarService(fooService *FooService, barService *BarService) *FooBarService {
+	return &FooBarService{FooService: fooService, BarService: barService}
+}
+```
+
+Kemudian pada code injector:
+```go
+var fooSet = wire.NewSet(NewFooRepository, NewFooService)
+
+var barSet = wire.NewSet(NewBarReposiotry, NewBarService)
+
+func InitializedFooBarService() *FooBarService {
+	wire.Build(fooSet, barSet, NewFooBarService)
+	return nil
+}
+```
+Jalankan wire, maka secara otomatis akan tergenerate.

@@ -22,3 +22,13 @@ func InitializedDatabaseRepository() *DatabaseRepository {
 
 	return nil
 }
+
+// provider set
+var fooSet = wire.NewSet(NewFooRepository, NewFooService)
+
+var barSet = wire.NewSet(NewBarReposiotry, NewBarService)
+
+func InitializedFooBarService() *FooBarService {
+	wire.Build(fooSet, barSet, NewFooBarService)
+	return nil
+}
