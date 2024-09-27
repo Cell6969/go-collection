@@ -237,5 +237,60 @@ Saat melakukan dependency injection, kadang ada kasus dimana membuat beberapa pr
 
 Contoh implementasi:
 ```go
+// init database
+type Database struct {
+	Name string
+}
 
+// create aliasing
+type DatabasePostgreSQL Database
+type DatabaseMongoDB Database
+
+func NewDatabaseMongoDB() *DatabaseMongoDB {
+	return (*DatabaseMongoDB)(&Database{
+		Name: "Mongodb",
+	})
+}
+
+func NewDatabasePostgreSQL() *DatabasePostgreSQL {
+	return (*DatabasePostgreSQL)(&Database{
+		Name: "PostgreSQL",
+	})
+}
+
+// init database repository
+type DatabaseRepository struct {
+	DatabasePostgreSQL *DatabasePostgreSQL
+	DatabaseMongoDB    *DatabaseMongoDB
+}
+
+func NewDatabaseRepository(
+	databasePostgreSQL *DatabasePostgreSQL,
+	databaseMongoDB *DatabaseMongoDB,
+) *DatabaseRepository {
+	return &DatabaseRepository{DatabasePostgreSQL: databasePostgreSQL, DatabaseMongoDB: databaseMongoDB}
+}
+```
+
+Kemudian pada injector:
+```go
+func InitializedDatabaseRepository() *DatabaseRepository {
+	wire.Build(
+		NewDatabaseMongoDB,
+		NewDatabasePostgreSQL,
+		NewDatabaseRepository,
+	)
+
+	return nil
+}
+```
+
+Ketika dijalankan wire, maka hasilnya:
+```go
+func InitializedDatabaseRepository() *DatabaseRepository {
+	databasePostgreSQL := NewDatabasePostgreSQL()
+	databaseMongoDB := NewDatabaseMongoDB()
+	databaseRepository := NewDatabaseRepository(databasePostgreSQL, databaseMongoDB)
+	return databaseRepository
+}
 ```
